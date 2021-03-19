@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AndroidCompose</string>
+    <string name="main_table_room">Room</string>
+    <string name="main_table_room_related">Related</string>
+    <string name="main_table_room_all">All</string>
+    <string name="main_table_room_explore">Explore</string>
+    <string name="main_table_moment">Moments</string>
+    <string name="main_table_message">Message</string>
+</resources>
