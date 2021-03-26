@@ -82,6 +82,8 @@ val FunctionalGreen = Color(0xff52c41a)
 val FunctionalGrey = Color(0xfff6f6f6)
 val FunctionalDarkGrey = Color(0xff2e2e2e)
 
+val Cyan_00D8C9 = Color(0xff00D8C9)
+val Gray_8E8E93 = Color(0xff8E8E93)
 
 val LightColorPalette = MyColors(
     brand = Lavender2,

@@ -1,4 +1,4 @@
-package com.seine.main.ui
+package com.seine.main.ui.activity
 
 import android.content.Intent
 import android.os.Bundle

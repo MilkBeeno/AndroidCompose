@@ -1,4 +1,4 @@
-package com.seine.main.ui
+package com.seine.main.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,22 +16,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.W800
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ChainStyle
-import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.viewpager.widget.ViewPager
 import com.qin.common.base.MyApplication
 import com.qin.common.ktx.string
 import com.qin.common.theme.*
 import com.seine.main.R
+import com.seine.main.ui.AppMainScreen
+import com.seine.main.ui.Pager
+import com.seine.main.ui.convertAppMainScreen
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -43,15 +46,6 @@ class MainActivity : AppCompatActivity() {
             DrawerAppComponent()
         }
     }
-
-//    fun setMyContent(
-//        parent: CompositionContext? = null,
-//        content: @Composable () -> Unit
-//    ) {
-//        setContent(parent) {
-//            MyTheme(MyApplication.isDarkTheme, content)
-//        }
-//    }
 }
 
 @Composable
@@ -61,16 +55,25 @@ fun DrawerAppComponent() {
         ModalDrawer(
             drawerState = drawerState,
             gesturesEnabled = true,
-            drawerElevation = 100.dp,
             drawerContent = {
                 DrawerContent()
             },
             drawerBackgroundColor = MyTheme.colors.uiFloated
         ) {
-            val (currentScreen, selectScreen) = remember { mutableStateOf(AppScreen.RoomScreen) }
-            Column(modifier = Modifier.fillMaxSize()) {
-                RoomTable(drawerState)
-            }
+
+//            val (currentScreen, selectScreen) = remember { mutableStateOf(AppMainScreen.RoomRelatedJoined) }
+//            Column(modifier = Modifier.fillMaxSize()) {
+//                TopNavigationBar(drawerState)
+//                Surface(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(MyTheme.colors.error)
+//                        .weight(1f)
+//                ) {
+//                    CenterBody()
+//                }
+//                BottomNavigationBar(currentScreen, selectScreen)
+//            }
         }
     }
 }
@@ -89,7 +92,7 @@ fun DrawerContent() {
 
 
 @Composable
-fun RoomTable(drawerState: DrawerState) {
+fun TopNavigationBar(drawerState: DrawerState) {
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -151,7 +154,6 @@ fun RoomTable(drawerState: DrawerState) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f)
-                    .background(MyTheme.colors.uiFloated)
                     .clickable { },
                 contentAlignment = Alignment.Center
             ) {
@@ -180,10 +182,108 @@ fun RoomTable(drawerState: DrawerState) {
     }
 }
 
-enum class AppScreen {
-    RoomScreen,
-    MessageScreen,
-    MomentScreen,
+@Composable
+fun CenterBody() {
+
 }
+
+@Composable
+fun BottomNavigationBar(currentScreen: AppMainScreen, selectScreen: AppMainScreen.() -> Unit) {
+    val appScreen = currentScreen.convertAppMainScreen()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickable { selectScreen.invoke(AppMainScreen.RoomRelatedJoined) },
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(
+                    id =
+                    if (appScreen == AppMainScreen.Room) R.mipmap.main_room_select else R.mipmap.main_room
+                ),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(0.dp, 5.dp, 0.dp, 0.dp)
+                    .size(24.dp),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = string(R.string.main_table_room),
+                style = TextStyle(
+                    color = if (appScreen == AppMainScreen.Room) Cyan_00D8C9 else Gray_8E8E93,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = W800
+                )
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickable { selectScreen.invoke(AppMainScreen.MomentFollowing) },
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(
+                    id =
+                    if (appScreen == AppMainScreen.Moment) R.mipmap.main_moment_select else R.mipmap.main_moment
+                ),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(0.dp, 5.dp, 0.dp, 0.dp)
+                    .size(24.dp),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = string(R.string.main_table_moment),
+                style = TextStyle(
+                    color = if (appScreen == AppMainScreen.Moment) Cyan_00D8C9 else Gray_8E8E93,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = W800
+                )
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+                .clickable { selectScreen.invoke(AppMainScreen.MessageList) },
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(
+                    id =
+                    if (appScreen == AppMainScreen.Message) R.mipmap.main_message_select else R.mipmap.main_message
+                ),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(0.dp, 5.dp, 0.dp, 0.dp)
+                    .size(24.dp),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = string(R.string.main_table_message),
+                style = TextStyle(
+                    color = if (appScreen == AppMainScreen.Message) Cyan_00D8C9 else Gray_8E8E93,
+                    fontSize = 11.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = W800
+                )
+            )
+        }
+    }
+}
+
 
 
